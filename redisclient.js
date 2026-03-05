@@ -1,9 +1,18 @@
 import { createClient } from "redis";
 
-export const redisClient = createClient({
-  url: process.env.REDIS_URL
-});
+let redisClient = null;
 
-redisClient.on("error", (err) => console.log("Redis Client Error", err));
+try {
+  redisClient = createClient({
+    url: process.env.REDIS_URL
+  });
 
-await redisClient.connect();
+  redisClient.on("error", (err) => console.log("Redis Error:", err));
+
+  await redisClient.connect();
+  console.log("Redis connected");
+} catch (error) {
+  console.log("Redis not available, using memory storage");
+}
+
+export { redisClient };
